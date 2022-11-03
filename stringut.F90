@@ -239,7 +239,7 @@ function mystring(i)
   integer, intent(in) :: i
   write (mystring, *) i
   mystring = trim(adjustl(mystring))
-  if (i .gt. 10**10 )  STOP  'mystring exceeds 1.d10, stop.'
+  if (i .gt. 10**5 )  STOP  'mystring exceeds 1.d5, stop.'
   return
 end function mystring
 
@@ -564,19 +564,42 @@ subroutine remove_number_in_string (string1, string2, length)
   integer  kk
   character*1   CH1
   logical       con1
-
+  character (len=length) :: string3
 
   kk=LEN(string1)
   do i=1, kk
      CH1=string1(i:i)
      con1= CH1>='0'.AND.CH1<='9'
      if (con1) then
-        string2(i:i)=''
+        string3(i:i)=''
      else
-        string2(i:i)=string1(i:i)
+        string3(i:i)=string1(i:i)
      endif
   enddo
-  string2=trim(ADJUSTL(string1))
+  string2=trim(ADJUSTL(string3))
   return
 end subroutine remove_number_in_string
 
+
+
+subroutine remove_quote_in_string (string1, string2, length)
+  implicit none
+  integer, intent (in) :: length
+  character (len=length), intent(in) :: string1
+  character (len=length), intent(out):: string2
+  
+  integer  i
+  integer  kk
+  character*1   CH1
+  logical       con1
+  character (len=length) :: string3
+
+  kk=LEN(string1)
+  string3=string1
+  do i=1, kk
+     CH1=string1(i:i)
+     if (CH1==CHAR(39).OR.CH1==CHAR(34)) string3(i:i)=''
+  enddo
+  string2=trim(ADJUSTL(string3))
+  return
+end subroutine remove_quote_in_string
