@@ -73,15 +73,16 @@ end subroutine split_string
 
 
 
-subroutine scan_begin (iunps, substring, rew)  
+subroutine scan_begin (iunps, substring, rew, istatus)  
   !---------------------------------------------------------------------
   !
   implicit none
   ! unit of input
   integer, intent(in) :: iunps  
   ! Label to be matched
-  character (len=*), intent(in) :: substring  
-  logical, intent(in) :: rew  
+  character (len=*), intent(in) :: substring
+  logical, intent(in) :: rew
+  integer, intent(out) :: istatus
   ! String read from file
   character (len=100) :: line  
   ! Flag if .true. rewind the file
@@ -89,14 +90,19 @@ subroutine scan_begin (iunps, substring, rew)
   integer :: ios
   !
   ios = 0
+  istatus = 0
   if (rew) rewind (iunps)  
   do while (ios==0)  
      read (iunps, '(a100)', iostat = ios, err = 300) line  
-     if (matchbgn (line, substring) ) return  
+     if (matchbgn (line, substring) ) then
+        istatus=ios
+        return
+     endif
   enddo
-  return
-300 call error_nonstop ('scan_begin', & 
-         'No '//trim(substring)//' block', abs (ios) )  
+  istatus=ios; return
+300 istatus=1
+  call error_nonstop ('scan_begin', & 
+       'No '//trim(substring)//' block', abs (ios) )  
 end subroutine scan_begin
 
 
